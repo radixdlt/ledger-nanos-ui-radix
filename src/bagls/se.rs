@@ -53,16 +53,18 @@ impl Draw for Label<'_> {
     fn erase(&self) {
         let total_width = self.text.compute_width(self.bold);
         let c_height = OPEN_SANS[self.bold as usize].height as usize;
-        let x = self.layout.get_x(total_width);
-        let y = self.loc.get_y(c_height);
-        pic_draw(
-            x as i32,
-            y as i32,
-            total_width as u32,
-            c_height as u32,
-            false,
-            &crate::bitmaps::BLANK,
-        )
+        if total_width != 0 {
+            let x = self.layout.get_x(total_width);
+            let y = self.loc.get_y(c_height);
+            pic_draw(
+                x as i32,
+                y as i32,
+                total_width as u32,
+                c_height as u32,
+                false,
+                &crate::bitmaps::BLANK,
+            )
+        }
     }
 }
 
@@ -77,7 +79,6 @@ impl Draw for RectFull {
             self.width,
             self.height,
         );
-        nanos_sdk::screen::sdk_screen_update();
     }
 
     fn erase(&self) {
@@ -88,7 +89,6 @@ impl Draw for RectFull {
             self.width,
             self.height,
         );
-        nanos_sdk::screen::sdk_screen_update();
     }
 }
 
@@ -121,7 +121,7 @@ fn pic_draw(x: i32, y: i32, width: u32, height: u32, inverted: bool, bitmap: &[u
             inverted.as_ptr(),
             1,
             pic_bmp as *const u8,
-            (bitmap.len() * 8) as u32,
+            width * height,
         )
     }
 }
